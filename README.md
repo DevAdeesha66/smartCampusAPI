@@ -3,6 +3,7 @@
 A RESTful API built with JAX-RS (Jersey 2) deployed on Payara Server for managing campus rooms and sensors.
 
 ---
+🔗 Demo Link : https://drive.google.com/file/d/1kpIRfwjGKb6IvyZn6vh8nRMrd2TL6Ls8/view?usp=sharing
 
 ## API Overview
 
@@ -13,7 +14,7 @@ A RESTful API built with JAX-RS (Jersey 2) deployed on Payara Server for managin
 
 ---
 
-## 🔗 Endpoints Summary
+## 🔗 Endpoints 
 
 ### 🚪 Room Endpoints
 
