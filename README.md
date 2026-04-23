@@ -14,43 +14,43 @@ Storage --> In-memory HashMap (no database)
 
 ### Room Endpoints
 
-GET /api/v1/rooms — retrieve a list of all rooms
-POST /api/v1/rooms — create a new room
-GET /api/v1/rooms/{roomId} — retrieve a specific room by ID
-DELETE /api/v1/rooms/{roomId} — delete a room (blocked with 409 if sensors are still assigned)
+-GET /api/v1/rooms — retrieve a list of all rooms
+-POST /api/v1/rooms — create a new room
+-GET /api/v1/rooms/{roomId} — retrieve a specific room by ID
+-DELETE /api/v1/rooms/{roomId} — delete a room (blocked with 409 if sensors are still assigned)
 
 ### Sensor Endpoints
 
-GET /api/v1/sensors — retrieve a list of all sensors (supports optional ?type= filter)
-POST /api/v1/sensors — register a new sensor (validates roomId exists)
-GET /api/v1/sensors/{sensorId} — retrieve a specific sensor by ID
-DELETE /api/v1/sensors/{sensorId} — remove a sensor and unlink it from its room
+-GET /api/v1/sensors — retrieve a list of all sensors (supports optional ?type= filter)
+-POST /api/v1/sensors — register a new sensor (validates roomId exists)
+-GET /api/v1/sensors/{sensorId} — retrieve a specific sensor by ID
+-DELETE /api/v1/sensors/{sensorId} — remove a sensor and unlink it from its room
 
 ### Sensor Reading Endpoints
 
-GET /api/v1/sensors/{sensorId}/readings — retrieve the full reading history for a sensor
-POST /api/v1/sensors/{sensorId}/readings — add a new reading (blocked with 403 if sensor is in MAINTENANCE or OFFLINE status)
+-GET /api/v1/sensors/{sensorId}/readings — retrieve the full reading history for a sensor
+-POST /api/v1/sensors/{sensorId}/readings — add a new reading (blocked with 403 if sensor is in MAINTENANCE or OFFLINE status)
 
 ## Features
 
 
-RESTful API built with JAX-RS (Jersey 2) and deployed on Payara Server
+-RESTful API built with JAX-RS (Jersey 2) and deployed on Payara Server
 
-Discovery endpoint at GET /api/v1 implementing HATEOAS with navigational resource links
+-Discovery endpoint at GET /api/v1 implementing HATEOAS with navigational resource links
 
-Full room management including creation, retrieval, and safe deletion with sensor conflict detection
+-Full room management including creation, retrieval, and safe deletion with sensor conflict detection
 
-Full sensor management with referential integrity validation against existing rooms
+-Full sensor management with referential integrity validation against existing rooms
 
-Automatic update of a sensor's currentValue when a new reading is posted
+-Automatic update of a sensor's currentValue when a new reading is posted
 
-Custom ExceptionMappers for 409, 422, 403, and 500 error responses returning structured JSON
+-Custom ExceptionMappers for 409, 422, 403, and 500 error responses returning structured JSON
 
-Global safety net mapper preventing raw stack traces from being exposed to clients
+-Global safety net mapper preventing raw stack traces from being exposed to clients
 
-All data stored in-memory using HashMaps and ArrayLists. 
+-All data stored in-memory using HashMaps and ArrayLists. 
 
-No database required
+-No database required
 
 ## Conceptual Report
 
@@ -60,7 +60,7 @@ No database required
 
 In your report, explain the default lifecycle of a JAX-RS Resource class. Is a new instance instantiated for every incoming request, or does the runtime treat it as a singleton? Elaborate on how this architectural decision impacts the way you manage and synchronize your in-memory data structures (maps/lists) to prevent data loss or race conditions.
 
-JAX-RS creates a brand new instance of every Resource class for each incoming HTTP request which is called the per request lifecycle. It means any data stored as an instance field inside a resource class would be completely wiped after every single request which makes it impossible to persist any state between requests.
+-JAX-RS creates a brand new instance of every Resource class for each incoming HTTP request which is called the per request lifecycle. It means any data stored as an instance field inside a resource class would be completely wiped after every single request which makes it impossible to persist any state between requests.
 
 To resolve this issue, all data is stored in the DataStore singleton which is a class with one shared instance accessed through getInstance() that lives for the entire server process lifetime. Every resource class calls DataStore.getInstance() and operates on the same shared HashMaps, meaning data persists across all the requests for as long as the server is running.
 
@@ -68,7 +68,7 @@ For the thread safety in a production environment, ConcurrentHashMap and synchro
 
 #### Question 2
 
-Why is the provision of "Hypermedia" (links and navigation within responses) considered a hallmark of advanced RESTful design (HATEOAS)? How does this approach benefit client developers compared to static documentation?
+-Why is the provision of "Hypermedia" (links and navigation within responses) considered a hallmark of advanced RESTful design (HATEOAS)? How does this approach benefit client developers compared to static documentation?
 
 HATEOAS is used to embed navigational links directly inside API responses so that clients can discover and traverse the API dynamically, without having to memorise URLs from external static documentation.
 
@@ -85,7 +85,7 @@ The benefits of HATEOAS over static documentation can be mentioned as follows:
 
 #### Question 1
 
-When returning a list of rooms, what are the implications of returning only IDs versus returning the full room objects? Consider network bandwidth and client side processing.
+-When returning a list of rooms, what are the implications of returning only IDs versus returning the full room objects? Consider network bandwidth and client side processing.
 
 Returning the full room objects give the client all the data needed in a single request. It reduces the network round trips and improves the user experience. However, for a large scale dataset this wastes the bandwidth as the client may only need basic information such as IDs.
 
@@ -93,7 +93,7 @@ Returning only the IDs keep the payload small. However, it forces the client to 
 
 #### Question 2
 
-Is the DELETE operation idempotent in your implementation? Provide a detailed justification by describing what happens if a client mistakenly sends the exact same DELETE request for a room multiple times.
+-Is the DELETE operation idempotent in your implementation? Provide a detailed justification by describing what happens if a client mistakenly sends the exact same DELETE request for a room multiple times.
 
 Yes, DELETE is idempotent. Calling the same operation on multiple occasions produces the same server state despite of how many times it is called.
 
@@ -107,7 +107,7 @@ The state of the server is similar after both of these calls. The room does not 
 
 #### Question 1
 
-We explicitly use the @Consumes(MediaType.APPLICATION_JSON) annotation on the POST method. Explain the technical consequences if a client attempts to send data in a different format, such as text/plain or application/xml. How does JAX-RS handle this mismatch?
+-We explicitly use the @Consumes(MediaType.APPLICATION_JSON) annotation on the POST method. Explain the technical consequences if a client attempts to send data in a different format, such as text/plain or application/xml. How does JAX-RS handle this mismatch?
 
 The @Consumes(MediaType.APPLICATION_JSON) annotation declares a strict contract that this endpoint will only accept requests with the Content Type header set to application/json.
 
@@ -115,7 +115,7 @@ If a client sends requests with text/plain or application/xml, JAX-RS automatica
 
 #### Question 2
 
-You implemented this filtering using @QueryParam. Contrast this with an alternative design where the type is part of the URL path (e.g., /api/v1/sensors/type/CO2). Why is the query parameter approach generally considered superior for filtering and searching collections?
+-You implemented this filtering using @QueryParam. Contrast this with an alternative design where the type is part of the URL path (e.g., /api/v1/sensors/type/CO2). Why is the query parameter approach generally considered superior for filtering and searching collections?
 
 The query parameter approach GET /api/v1/sensors?type=CO2 is preferred over the path segment approach GET /api/v1/sensors/type/CO2. The reasons for this can be mentioned as follows:
 
@@ -130,7 +130,7 @@ The query parameter approach GET /api/v1/sensors?type=CO2 is preferred over the 
 
 #### Question 1
 
-Discuss the architectural benefits of the Sub-Resource Locator pattern. How does delegating logic to separate classes help manage complexity in large APIs compared to defining every nested path in one massive controller class?
+-Discuss the architectural benefits of the Sub-Resource Locator pattern. How does delegating logic to separate classes help manage complexity in large APIs compared to defining every nested path in one massive controller class?
 
 The sub-resource locator pattern is implemented in SensorResource where the getSensorReadings() method returns an instance of SensorReadingResource instead of handling the request itself. JAX-RS then assigns all the processing of the /readings path to that dedicated class.
 
@@ -142,7 +142,7 @@ The sub resource locator pattern provides several architectural benefits. It enf
 
 #### Question 1
 
-Why is HTTP 422 often considered more semantically accurate than a standard 404 when the issue is a missing reference inside a valid JSON payload?
+-Why is HTTP 422 often considered more semantically accurate than a standard 404 when the issue is a missing reference inside a valid JSON payload?
 
 HTTP 404 means that the URL that was requested does not correspond to any resource in the system. The problem is the request path while HTTP 422 means the URL is valid, the request reached the correct endpoint and the JSON body is syntactically correct but the logical content inside the payload is invalid.
 
@@ -150,7 +150,7 @@ HTTP 422 is semantically more accurate because the problem is not that the clien
 
 #### Question 2
 
-From a cybersecurity standpoint, explain the risks associated with exposing internal Java stack traces to external API consumers. What specific information could an attacker gather from such a trace?
+-From a cybersecurity standpoint, explain the risks associated with exposing internal Java stack traces to external API consumers. What specific information could an attacker gather from such a trace?
 
 - Class names and package structures are revealed which allows the attackers to map the internal architecture of the application.
 - Exact line numbers are exposed which will help to pinpoint precisely where the errors occur. That will help the attackers create targeted exploits against specific code paths.
@@ -160,7 +160,7 @@ From a cybersecurity standpoint, explain the risks associated with exposing inte
 
 #### Question 3
 
-Why is it advantageous to use JAX-RS filters for cross-cutting concerns like logging, rather than manually inserting Logger.info() statements inside every single resource method?
+-Why is it advantageous to use JAX-RS filters for cross-cutting concerns like logging, rather than manually inserting Logger.info() statements inside every single resource method?
 
 Using JAX-RS filters for logging is architecturally superior to placing Logger.info() calls inside every individual resource method. It eliminates code duplication and ensures cleaner design. With filters a single class can handle logging for all endpoints while manual logging requires codes to be repeated inside every method. This approach also helps to keep resource methods focused on their main responsibility which is handling business logic. Filters also guarantee consistency across the application. Logging is automatically applied to every request and response helping to remove the risk of developers forgetting to add logs to the new endpoints. Any changes to the logging format can also be done in one place which helps to make the updates much easier.
 
