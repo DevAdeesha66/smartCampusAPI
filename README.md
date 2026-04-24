@@ -49,6 +49,39 @@ A RESTful API built with JAX-RS (Jersey 2) deployed on Payara Server for managin
 - All data stored in-memory using HashMaps and ArrayLists — no database required
 
 ---
+## 🛠️ How to Build and Run
+
+### Prerequisites
+- Java JDK 11
+- Apache NetBeans with Maven support
+- Payara Server 5
+
+### Step 1 — Clone the repository
+```bash
+git clone https://github.com/DevAdeesha66/smartCampusAPI.git
+```
+
+### Step 2 — Open in NetBeans
+1. Open NetBeans
+2. File → Open Project
+3. Navigate to the cloned folder and open it
+4. NetBeans detects the pom.xml and loads it as a Maven project
+
+### Step 3 — Build
+Right-click the project → Clean and Build
+
+Maven downloads all dependencies automatically. You will see BUILD SUCCESS in the Output window.
+
+### Step 4 — Run
+Right-click the project → Run
+
+Payara Server starts and deploys the WAR file automatically.
+
+### Step 5 — Access the API
+Open your browser or Postman and navigate to: http://localhost:8080/smartCampusApi/api/v1
+
+---
+
 
 ## 📝 Conceptual Report
 
