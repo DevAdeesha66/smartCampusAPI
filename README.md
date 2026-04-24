@@ -1,4 +1,5 @@
-# 🏫 Smart Campus Sensor & Room Management API
+# Smart Campus Sensor & Room Management API
+
 
 A RESTful API built with JAX-RS (Jersey 2) deployed on Payara Server for managing campus rooms and sensors.
 
@@ -13,31 +14,39 @@ A RESTful API built with JAX-RS (Jersey 2) deployed on Payara Server for managin
 - **Storage** → In-memory HashMap (no database)
 
 ---
+## Tech Stack
+- **Language** → Java 11
+- **Framework** → JAX-RS (Jersey 2.39.1)
+- **Server** → Payara Server 5
+- **Build Tool** → Apache Maven
+- **Data Storage** → In-memory HashMap 
+- **IDE** → Apache NetBeans
+
 
 ## 🔗 Endpoints 
 
-### 🚪 Room Endpoints
+### Room Endpoints
 
 - `GET /api/v1/rooms` — Retrieve a list of all rooms
 - `POST /api/v1/rooms` — Create a new room
 - `GET /api/v1/rooms/{roomId}` — Retrieve a specific room by ID
 - `DELETE /api/v1/rooms/{roomId}` — Delete a room (blocked with 409 if sensors are still assigned)
 
-### 📡 Sensor Endpoints
+###  Sensor Endpoints
 
 - `GET /api/v1/sensors` — Retrieve a list of all sensors (supports optional `?type=` filter)
 - `POST /api/v1/sensors` — Register a new sensor (validates roomId exists)
 - `GET /api/v1/sensors/{sensorId}` — Retrieve a specific sensor by ID
 - `DELETE /api/v1/sensors/{sensorId}` — Remove a sensor and unlink it from its room
 
-### 📊 Sensor Reading Endpoints
+### Sensor Reading Endpoints
 
 - `GET /api/v1/sensors/{sensorId}/readings` — Retrieve the full reading history for a sensor
 - `POST /api/v1/sensors/{sensorId}/readings` — Add a new reading (blocked with 403 if sensor is in MAINTENANCE or OFFLINE status)
 
 ---
 
-## ✨ Features
+## Features
 
 - RESTful API built with JAX-RS (Jersey 2) and deployed on Payara Server
 -  Discovery endpoint at `GET /api/v1` implementing HATEOAS with navigational resource links
@@ -56,34 +65,70 @@ A RESTful API built with JAX-RS (Jersey 2) deployed on Payara Server for managin
 - Apache NetBeans with Maven support
 - Payara Server 5
 
-### Step 1 — Clone the repository
-```bash
-git clone https://github.com/DevAdeesha66/smartCampusAPI.git
-```
+### Steps
 
-### Step 2 — Open in NetBeans
-1. Open NetBeans
-2. File → Open Project
-3. Navigate to the cloned folder and open it
-4. NetBeans detects the pom.xml and loads it as a Maven project
-
-### Step 3 — Build
-Right-click the project → Clean and Build
-
-Maven downloads all dependencies automatically. You will see BUILD SUCCESS in the Output window.
-
-### Step 4 — Run
-Right-click the project → Run
-
-Payara Server starts and deploys the WAR file automatically.
-
-### Step 5 — Access the API
-Open your browser or Postman and navigate to: http://localhost:8080/smartCampusApi/api/v1
+1. Clone the repo and open it in NetBeans via File -> Open Project
+2. Right-click the project -> Clean and Build
+3. Right-click the project -> Run
+4. Access the API at `http://localhost:8080/smartCampusApi/api/v1`
 
 ---
 
+## Sample curl Commands
 
-## 📝 Conceptual Report
+### 1. Discovery
+```bash
+curl -X GET http://localhost:8080/smartCampusApi/api/v1
+```
+
+### 2. Get All Rooms
+```bash
+curl -X GET http://localhost:8080/smartCampusApi/api/v1/rooms
+```
+
+### 3. Create a Room
+```bash
+curl -X POST http://localhost:8080/smartCampusApi/api/v1/rooms -H "Content-Type: application/json" -d "{\"id\":\"HALL-01\",\"name\":\"Main Hall\",\"capacity\":200}"
+```
+
+### 4. Get All Sensors Filtered by Type
+```bash
+curl -X GET "http://localhost:8080/smartCampusApi/api/v1/sensors?type=CO2"
+```
+
+### 5. Register a New Sensor
+```bash
+curl -X POST http://localhost:8080/smartCampusApi/api/v1/sensors -H "Content-Type: application/json" -d "{\"id\":\"TEMP-002\",\"type\":\"Temperature\",\"status\":\"ACTIVE\",\"currentValue\":0,\"roomId\":\"LIB-301\"}"
+```
+
+### 6. Add a Sensor Reading
+```bash
+curl -X POST http://localhost:8080/smartCampusApi/api/v1/sensors/TEMP-001/readings -H "Content-Type: application/json" -d "{\"value\":25.3}"
+```
+
+### 7. Get Reading History
+```bash
+curl -X GET http://localhost:8080/smartCampusApi/api/v1/sensors/TEMP-001/readings
+```
+
+### 8. Delete a Room with Sensors (409 Conflict)
+```bash
+curl -X DELETE http://localhost:8080/smartCampusApi/api/v1/rooms/LIB-301
+```
+
+### 9. Post Reading to MAINTENANCE Sensor (403 Forbidden)
+```bash
+curl -X POST http://localhost:8080/smartCampusApi/api/v1/sensors/OCC-001/readings -H "Content-Type: application/json" -d "{\"value\":5}"
+```
+
+### 10. Create Sensor with Invalid roomId (422 Unprocessable Entity)
+```bash
+curl -X POST http://localhost:8080/smartCampusApi/api/v1/sensors -H "Content-Type: application/json" -d "{\"id\":\"BAD-001\",\"type\":\"Temperature\",\"status\":\"ACTIVE\",\"currentValue\":0,\"roomId\":\"GHOST-999\"}"
+```
+
+---
+
+## Conceptual Report
 
 ### Part 1 — Project & Application Configuration
 
